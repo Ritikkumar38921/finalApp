@@ -3,7 +3,7 @@ const router = express.Router();
 let  Auth = require("../models/auth");
 let bcrypt = require('bcrypt');
 let jwt = require('jsonwebtoken');
-let secretKey = "jhvsacmabc mbKAbcjabcl";
+let secretKey = process.env.secretKey;
 
 router.post('/signin',async (req,res) => {
     try {
@@ -17,7 +17,6 @@ router.post('/signin',async (req,res) => {
 
         let payload = user._id;
         let token = await jwt.sign({payload},secretKey);
-        console.log(token);
         let modifyToken = `${token} ${email}`;
         res.cookie('isLogin',modifyToken,{maxAge:99999});
         
