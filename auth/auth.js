@@ -3,23 +3,22 @@ const router = express.Router();
 let  Auth = require("../models/auth");
 let bcrypt = require('bcrypt');
 let jwt = require('jsonwebtoken');
-let secretKey = process.env.secretKey;
 
 router.post('/signin',async (req,res) => {
     try {
         let {email,password} = req.body;
+        console.log(email);
+        console.log(password);
         let user = await Auth.findOne({email:email});
         let result =  await bcrypt.compare(password,user.password);
 
         if(result == false){
             return res.status(300).send('please enter the valid emailId and password');
         }
-
         let payload = user._id;
-        let token = await jwt.sign({payload},secretKey);
+        let token = await jwt.sign({payload},process.env.SCREATKEY);
         let modifyToken = `${token} ${email}`;
         res.cookie('isLogin',modifyToken,{maxAge:99999});
-        
         res.send("hello");
     } catch (error) {
         res.status(500).send(error);
@@ -28,13 +27,14 @@ router.post('/signin',async (req,res) => {
 
 router.post('/signup',async(req,res) => {
     try {
+        
         let salt = await bcrypt.genSalt();
         req.body.password = await bcrypt.hash(req.body.password,salt);
         req.body.confirmPassword = req.body.password;
         let {name,password,confirmPassword,email} = req.body;
         let user = await Auth.create({name,password,email,confirmPassword});
         let payload = user._id;
-        let token = await jwt.sign({payload},secretKey);
+        let token = await jwt.sign({payload},process.env.SCREATKEY);
         let modifyToken = `${token} ${email}`;
         res.cookie('isLogin',modifyToken,{maxAge:99999});
         res.status(200).send("done");
