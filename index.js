@@ -65,6 +65,7 @@ app.post('/upload',protectedRoute,upload.single('myfile'),async(req,res) => {
 app.get('/images', async(req,res) => {
     try {
         let imgs = await images.find({});
+        console.log("");
         res.status(200).send(imgs);
     } catch (error) {
         res.status(500).send(error);
