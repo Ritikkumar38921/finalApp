@@ -15,7 +15,8 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 app.use(cookieParser());
-app.listen(PORT,() => {console.log(`server is listening on the port ${PORT}`)});
+
+
 
 mongoose.connect(process.env.MONGO_URL)
 .then(() => {console.log('database connected');})
@@ -23,8 +24,15 @@ mongoose.connect(process.env.MONGO_URL)
     console.log('database not connected');
 });
 
-app.use(express.static(__dirname + '/views'));
-app.use(express.static(__dirname + "/public"))
+if(process.env.NODE_ENV == "production"){
+    app.use(express.static(__dirname + '/views'));
+    app.use(express.static(__dirname + '/public'));
+}
+
+
+app.listen(PORT,() => {console.log(`server is listening on the port ${PORT}`)});
+// app.use(express.static(__dirname + '/views'));
+// app.use(express.static(__dirname + "/public"))
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
